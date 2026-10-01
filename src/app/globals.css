@@ -1,2 +1,21 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "dhakatesla";
+  default: true;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: oklch(18% 0.02 260);      /* Deep road charcoal */
+  --color-base-200: oklch(14% 0.02 260);      /* Darker backdrop */
+  --color-base-300: oklch(11% 0.02 260);      /* Ground background */
+  --color-base-content: oklch(95% 0.01 260);  /* Clean white-gray text */
+  --color-primary: oklch(58% 0.24 25);       /* Tesla Bullet Red (#E82127) */
+  --color-primary-content: oklch(98% 0 0);
+  --color-secondary: oklch(65% 0.18 150);    /* Eco Electric Green */
+  --color-secondary-content: oklch(98% 0 0);
+  --color-accent: oklch(75% 0.16 75);        /* Traffic Amber / Surge */
+  --color-accent-content: oklch(15% 0.05 75);
+  --radius-box: 0.75rem;
+  --radius-btn: 0.5rem;
+}
