@@ -5,12 +5,14 @@ USE dhaka_tesla_pool;
 -- Users (both Passengers and Drivers)
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    firebase_uid VARCHAR(128) UNIQUE,
+    email VARCHAR(255) UNIQUE NOT NULL,
     name VARCHAR(100) NOT NULL,
     role ENUM('PASSENGER', 'DRIVER') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Vehicles (Teslas)
+-- Vehicles (Jashim's Bullet)
 CREATE TABLE IF NOT EXISTS vehicles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     driver_id INT NOT NULL,
@@ -28,12 +30,12 @@ CREATE TABLE IF NOT EXISTS ride_requests (
     dropoff_zone VARCHAR(100) NOT NULL,
     seats_requested INT NOT NULL DEFAULT 1,
     base_fare DECIMAL(10, 2) NOT NULL,
-    status ENUM('WAITING', 'MATCHED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED') DEFAULT 'WAITING',
+    status ENUM('REQUESTED', 'MATCHED', 'DRIVER_ARRIVED', 'STARTED', 'COMPLETED', 'CANCELLED') DEFAULT 'REQUESTED',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (passenger_id) REFERENCES users(id)
 );
 
--- Active Pools (The Shared Tesla Trip)
+-- Active Pools (The Shared Trip)
 CREATE TABLE IF NOT EXISTS pools (
     id INT AUTO_INCREMENT PRIMARY KEY,
     vehicle_id INT NOT NULL,
