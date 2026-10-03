@@ -2,10 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Zap, Car, Users, History, LogIn } from 'lucide-react';
+import { Zap, Car, Users, History, LogIn, LogOut, User as UserIcon } from 'lucide-react';
+import { useAuth } from '@/providers/AuthProvider';
+import toast from 'react-hot-toast';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { user, logoutUser } = useAuth();
 
   const navLinks = [
     { href: '/', label: 'Overview', icon: Zap },
@@ -13,6 +16,16 @@ export default function Navbar() {
     { href: '/driver', label: 'Driver Portal', icon: Car },
     { href: '/history', label: 'Trip History', icon: History }
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      toast.success('Successfully logged out.');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      toast.error('Failed to log out. Please try again.');
+    }
+  };
 
   return (
     <header className="navbar bg-base-100/90 backdrop-blur-md border-b border-base-200/80 px-4 md:px-8 sticky top-0 z-50">
@@ -52,10 +65,23 @@ export default function Navbar() {
           })}
         </div>
 
-        <Link href="/login" className="btn btn-sm btn-outline border-base-300 hover:border-primary">
-          <LogIn className="w-4 h-4" />
-          <span>Sign In</span>
-        </Link>
+        {user ? (
+          <div className="flex items-center gap-3 border-l border-base-300 pl-4">
+            <span className="text-sm font-medium flex items-center gap-2 text-base-content/80">
+              <UserIcon className="w-4 h-4" />
+              {user.displayName || user.email.split('@')[0]}
+            </span>
+            <button onClick={handleLogout} className="btn btn-sm btn-outline btn-error hover:text-white border-base-300">
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        ) : (
+          <Link href="/login" className="btn btn-sm btn-outline border-base-300 hover:border-primary text-base-content">
+            <LogIn className="w-4 h-4" />
+            <span>Sign In</span>
+          </Link>
+        )}
       </div>
 
       {/* Mobile Dropdown */}
@@ -66,19 +92,39 @@ export default function Navbar() {
           </svg>
         </label>
         <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-50 p-2 shadow-xl bg-base-100 rounded-box w-52 border border-base-200">
-          {navLinks.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href} className={pathname === item.href ? 'active text-primary' : ''}>
-                {item.label}
+          {navLinks.map((item) => {
+            const Icon = item.icon;
+            return (
+              <li key={item.href}>
+                <Link href={item.href} className={pathname === item.href ? 'active text-primary' : ''}>
+                  <Icon className="w-4 h-4" />
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
+          <div className="divider my-1"></div>
+          
+          {user ? (
+            <>
+              <li className="px-3 py-2 text-xs font-semibold text-base-content/50 uppercase">
+                {user.displayName || user.email}
+              </li>
+              <li>
+                <button onClick={handleLogout} className="text-error font-medium flex items-center gap-2">
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
+              </li>
+            </>
+          ) : (
+            <li>
+              <Link href="/login" className="text-primary font-medium flex items-center gap-2">
+                <LogIn className="w-4 h-4" />
+                Sign In
               </Link>
             </li>
-          ))}
-          <div className="divider my-1"></div>
-          <li>
-            <Link href="/login" className="text-primary font-medium">
-              Sign In
-            </Link>
-          </li>
+          )}
         </ul>
       </div>
     </header>
